@@ -1,0 +1,87 @@
+import mysql.connector
+
+minhaconexao = mysql.connector.connect(
+    host="127.0.0.1",
+    user="root",
+    password="desenv1bd",
+    database="ads2023ged"
+)
+
+meucursor = minhaconexao.cursor()
+
+print("Cadastro de Usuarios do Sistema GED: ")
+print()
+print("Digite a Opção Desejada: ")
+opcao = int(input("1 - Cadastro; 2 - Consulta; 3 - Atualização; 4 - Exclusão; "))
+
+if (opcao == 1 ):
+
+    print("Digite os dados do Usuario: ")
+    login = input("Login: ")
+    senha = input("Senha: ")
+    email = input("Email: ")
+
+    SQL = "INSERT INTO usuarios(login, senha, email, tipo, status) VALUES (%s, %s, %s, %s, %s)"
+
+    DADOS = (login, senha, email, 'U', 'A')
+
+    meucursor.execute(SQL, DADOS)
+
+    print("Numero de Registros Afetados: ", meucursor.rowcount)
+
+    print("Usuario Cadastrado com Sucesso!!!")
+
+    minhaconexao.commit()
+
+
+if (opcao == 2 ):
+    print("Você Escolheu a Opção de Consulta")
+    login = input("Digite um Login: ")
+
+    SQL = "SELECT * FROM usuarios WHERE login LIKE %s AND status = 'A'"
+
+    DADOS = ("%"+login+"%", )
+
+    meucursor.execute(SQL, DADOS)
+
+    consultaBanco = meucursor.fetchall()
+
+    for linhaBanco in consultaBanco:
+        print("idusuario: ", linhaBanco [0], "login: ", linhaBanco[1], "Email: ", linhaBanco[2])
+
+    minhaconexao.commit()
+
+if (opcao == 3):
+    print("Você Escolheu a Opção de Atualizar: ")
+    print("Digite os dados para Atualizar: ")
+    email = input("Email: ")
+    novaSenha = input("Nova Senha: ")
+
+    SQL = "UPDATE usuarios SET senha=%s WHERE email=%s"
+
+    DADOS = (novaSenha, email)
+
+    meucursor.execute(SQL, DADOS)
+
+    print("Número de Registros Afetados = ", meucursor.rowcount)
+
+    minhaconexao.commit()
+
+if (opcao == 4):
+    print("Você escolheu a Opção de Exclusão: ")
+    print("Digite o filtro para Exclusão: ")
+    email = input("Email: ")
+
+    SQL = "UPDATE usuarios SET status='B' WHERE email = %s "
+
+    DADOS = (email, )
+
+    meucursor.execute(SQL, DADOS)
+
+    print("Números de Registros Afetados = ", meucursor.rowcount)
+
+    minhaconexao.commit()
+
+
+meucursor.close()
+minhaconexao.close()

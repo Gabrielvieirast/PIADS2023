@@ -1,6 +1,6 @@
 finalidade: sistema GED do Projeto Integrador
 data: 04/10/2023
-'''
+#Autores: Gabriel Vieira Santos Teles, Johnny Ferreira Dias, Luachely dos Santos Cavalcante, Matheus Bezerra, Kaio Sousa. 
 
 import mysql.connector
 

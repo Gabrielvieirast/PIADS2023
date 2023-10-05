@@ -1,0 +1,128 @@
+finalidade: sistema GED do Projeto Integrador
+data: 04/10/2023
+'''
+
+import mysql.connector
+
+print("Sistema GED do Projeto Integrador")
+
+entrada = "INATIVO"
+perfil = "VAZIO"
+status = "VAZIO"
+
+print("Escolha uma opção:")
+print("1 - Cadastrar; 2 - Logar")
+opcao = int(input("Digite uma opcao: "))
+
+if opcao == 1:
+    print("Opcao Escolhida: Cadastrar")
+    print("Informe seus dados:")
+    login = input("Login: ")
+    senha = input("Senha: ")
+    email = input("Email: ")
+
+    meuBanco = mysql.connector.connect(
+        host="localhost", user="root", password="aloisk", database="pi2023ead"
+        )
+
+    meuCursor = meuBanco.cursor()
+
+    SQL = "INSERT INTO usuarios(login, senha, email, tipo, situacao) VALUES (%s, %s, %s, %s, %s)"
+    DADOS = (login, senha, email, 'U', 'A')
+
+    meuCursor.execute(SQL, DADOS)
+    meuBanco.commit()
+    meuCursor.close()
+    meuBanco.close()
+    print("Usuario Cadastrado com Sucesso!!!")
+    print()
+
+    entrada = "ATIVO"
+
+if opcao == 2:
+    print("Opcao Escolhida: Logar")
+    print("Informe seus dados:")
+    login = input("Login: ")
+    senha = input("Senha: ")
+
+    meuBanco = mysql.connector.connect(host="localhost", user="root", password="aloisk", database="pi2023ead")
+    meuCursor = meuBanco.cursor()
+
+    SQL = "SELECT * FROM usuarios WHERE login = %s  AND senha = %s"
+    DADOS = (login, senha)
+
+    meuCursor.execute(SQL, DADOS)
+
+    consultaBanco = meuCursor.fetchone()
+    idUser= consultaBanco[0]
+    perfil = consultaBanco[4]
+    status = consultaBanco[5]
+
+    if(consultaBanco):
+        entrada = "ATIVO"
+    else:
+        entrada = "INATIVO"
+
+    meuCursor.close()
+    meuBanco.close()
+
+
+if (entrada == "ATIVO" and perfil == "U" and status == "A"):
+
+    continuar = "S"
+
+    while((continuar == "S" or continuar == "s") and entrada != "INATIVO" ):
+
+        print("Usuario Autenticado no Sistema")
+        print("Escolha uma Opções:")
+        print("1 - Visualizar Dados; 2 - Alterar Dados; 5 - Sair")
+        opcao = int(input("Digite uma Opção:"))
+
+        if(opcao == 1):
+            print("Opcao selecionada: Visualizar Dados")
+            print("Dados Cadastrados:")
+            meuBanco = mysql.connector.connect(host="localhost", user="root", password="aloisk", database="pi2023ead")
+            meuCursor = meuBanco.cursor()
+            SQL = "SELECT * FROM usuarios WHERE idUser = %s"
+            DADOS = (idUser, )
+            meuCursor.execute(SQL, DADOS)
+            consultaBanco = meuCursor.fetchone()
+            print("Dados do Usuario:")
+            print("idUsuario: ", consultaBanco[0])
+            print("Login: ", consultaBanco[1])
+            print("Senha: ", consultaBanco[2])
+            print("Email: ", consultaBanco[3])
+            print("Tipo: ", consultaBanco[4])
+            print("Status: ", consultaBanco[5])
+            meuCursor.close()
+            meuBanco.close()
+
+        if(opcao == 2):
+            print("Opcao selecionada: Atualizar Dados")
+            print("Informe seus dados:")
+            senha = input("Nova Senha: ")
+            email = input("Novo Email: ")
+            meuBanco = mysql.connector.connect(host="localhost", user="root", password="aloisk", database="pi2023ead")
+            meuCursor = meuBanco.cursor()
+            SQL = "UPDATE usuarios SET email = %s, senha = %s WHERE iduser = %s"
+            DADOS = (email, senha, idUser)
+            meuCursor.execute(SQL, DADOS)
+            meuBanco.commit()
+            print("Dados Atualizados com Sucesso!")
+            meuCursor.close()
+            meuBanco.close()
+
+        if(opcao == 5):
+            print("Opcao selecionada: Sair")
+            entrada = "INATIVO"
+            perfil = "VAZIO"
+            status = "VAZIO"
+            idUsuario = -1
+
+
+
+        print("Deseja continuar no programa?")
+        continuar = input("Digite S/N: ")
+
+else:
+    print("Usuario Não Autenticado")
